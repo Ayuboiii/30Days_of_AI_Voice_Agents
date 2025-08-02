@@ -1,0 +1,156 @@
+:root {
+    --hud-color: #00d9ff;
+    --background-color: #020a14;
+    --glow-color: rgba(0, 217, 255, 0.5);
+    --secondary-glow: rgba(255, 99, 71, 0.7); /* Tomato color for accents */
+}
+
+body {
+    background: var(--background-color);
+    color: var(--hud-color);
+    font-family: 'Rajdhani', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    letter-spacing: 2px;
+}
+
+.hud-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Base style for rotating HUD circles */
+.radial-hud-1, .radial-hud-2, .radial-hud-3 {
+    position: absolute;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: var(--hud-color);
+    opacity: 0.5;
+}
+
+/* Individual circle sizes, borders, and animations */
+.radial-hud-1 {
+    width: 50vmin;
+    height: 50vmin;
+    border-width: 1px;
+    animation: spin 20s linear infinite;
+    border-left-color: transparent;
+    border-right-color: transparent;
+}
+
+.radial-hud-2 {
+    width: 65vmin;
+    height: 65vmin;
+    border-width: 2px;
+    animation: spin-reverse 30s linear infinite;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+}
+
+.radial-hud-3 {
+    width: 80vmin;
+    height: 80vmin;
+    border-width: 1px;
+    opacity: 0.2;
+    animation: spin 45s linear infinite;
+}
+
+/* Main content block */
+.main-content {
+    z-index: 10;
+    text-align: center;
+    text-shadow: 0 0 10px var(--glow-color);
+}
+
+#welcome-text {
+    font-size: 3rem;
+    font-weight: 500;
+    margin: 0;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+.system-status {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+.status-ok {
+    color: #4cff4c;
+    text-shadow: 0 0 8px #4cff4c;
+}
+
+/* Placeholder for voice visualization */
+.voice-wave-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 50px;
+    margin-bottom: 2rem;
+}
+
+.voice-wave-placeholder .bar {
+    width: 6px;
+    margin: 0 4px;
+    background-color: var(--hud-color);
+    box-shadow: 0 0 5px var(--glow-color);
+    animation: wave 1.5s infinite ease-in-out;
+}
+
+/* Staggered animation for wave bars */
+.voice-wave-placeholder .bar:nth-child(2) { animation-delay: 0.2s; }
+.voice-wave-placeholder .bar:nth-child(3) { animation-delay: 0.4s; }
+.voice-wave-placeholder .bar:nth-child(4) { animation-delay: 0.6s; }
+.voice-wave-placeholder .bar:nth-child(5) { animation-delay: 0.8s; }
+
+/* Interactive Buttons */
+.button-grid {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.hud-button {
+    background: transparent;
+    border: 1px solid var(--hud-color);
+    color: var(--hud-color);
+    padding: 0.75rem 1.5rem;
+    font-family: inherit;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 5px var(--glow-color), 0 0 5px var(--glow-color);
+}
+
+.hud-button:hover {
+    background-color: var(--glow-color);
+    color: var(--background-color);
+    box-shadow: 0 0 20px var(--secondary-glow);
+    border-color: var(--secondary-glow);
+}
+
+
+/* Keyframe Animations */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
+@keyframes wave {
+    0%, 100% { height: 10px; }
+    50% { height: 50px; }
+}
