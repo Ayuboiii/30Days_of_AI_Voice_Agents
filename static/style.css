@@ -1,156 +1,295 @@
+/* --- FONT & GLOBAL SETUP --- */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;600&display=swap');
+
 :root {
-    --hud-color: #00d9ff;
-    --background-color: #020a14;
-    --glow-color: rgba(0, 217, 255, 0.5);
-    --secondary-glow: rgba(255, 99, 71, 0.7); /* Tomato color for accents */
+    --hud-blue: #00d9ff;
+    --hud-glow: rgba(0, 217, 255, 0.75);
+    --dark-bg: #020a14;
+    --error-red: #ff4a4a;
+    --error-glow: rgba(255, 74, 74, 0.75);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background: var(--background-color);
-    color: var(--hud-color);
+    background-color: var(--dark-bg);
+    color: var(--hud-blue);
     font-family: 'Rajdhani', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     height: 100vh;
-    margin: 0;
+    width: 100vw;
     overflow: hidden;
-    letter-spacing: 2px;
+    cursor: crosshair;
 }
 
-.hud-container {
+/* --- LAYOUT & MAIN CONTAINER --- */
+#hud {
     position: relative;
     width: 100%;
     height: 100%;
+    perspective: 800px;
+}
+
+.layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.1s ease-out;
+}
+
+/* --- BACKGROUND & DECORATIVE ELEMENTS --- */
+.grid-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(0, 217, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 217, 255, 0.07) 1px, transparent 1px);
+    background-size: 25px 25px;
+}
+
+.scanline {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: var(--hud-glow);
+    opacity: 0.5;
+    box-shadow: 0 0 10px var(--hud-glow);
+    animation: scan 10s linear infinite;
+}
+
+.corner {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border: 2px solid var(--hud-blue);
+    box-shadow: 0 0 5px var(--hud-glow);
+    opacity: 0;
+}
+.top-left { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+.top-right { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+.bottom-left { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+.bottom-right { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+/* --- HUD WIDGETS --- */
+.hud-widget {
+    position: absolute;
+    opacity: 0;
+    text-shadow: 0 0 5px var(--hud-glow);
+}
+
+#targeting-reticle {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+}
+
+#targeting-reticle .ring {
+    stroke: var(--hud-blue);
+    stroke-width: 1;
+    fill: none;
+}
+
+#scanner-tl, #scanner-br {
+    width: 150px;
+    height: 150px;
+}
+#scanner-tl { top: 50px; left: 50px; }
+#scanner-br { bottom: 50px; right: 50px; }
+
+#scanner-tl circle, #scanner-br circle {
+    stroke: var(--hud-blue);
+    stroke-width: 1;
+    fill: rgba(0, 217, 255, 0.05);
+    stroke-dasharray: 0;
+    stroke-dashoffset: 0;
+}
+
+.info-panel {
+    padding: 1rem;
+    width: 200px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    background: rgba(2, 10, 20, 0.3);
+    backdrop-filter: blur(3px);
+}
+#left-panel { top: 50%; left: 30px; transform: translateY(-50%); }
+#right-panel { top: 50%; right: 30px; transform: translateY(-50%); text-align: right; }
+
+.info-panel h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.5);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+.info-panel .stat {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    margin: 5px 0;
+}
+
+#interaction-panel {
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     align-items: center;
 }
 
-/* Base style for rotating HUD circles */
-.radial-hud-1, .radial-hud-2, .radial-hud-3 {
-    position: absolute;
-    border-radius: 50%;
-    border-style: solid;
-    border-color: var(--hud-color);
-    opacity: 0.5;
+#text-input {
+    flex-grow: 1;
+    width: 100%;
+    background: rgba(2, 10, 20, 0.5);
+    border: 1px solid var(--hud-blue);
+    color: var(--hud-blue);
+    padding: 10px 15px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    outline: none;
+    transition: all 0.2s ease;
 }
 
-/* Individual circle sizes, borders, and animations */
-.radial-hud-1 {
-    width: 50vmin;
-    height: 50vmin;
-    border-width: 1px;
-    animation: spin 20s linear infinite;
-    border-left-color: transparent;
-    border-right-color: transparent;
-}
-
-.radial-hud-2 {
-    width: 65vmin;
-    height: 65vmin;
-    border-width: 2px;
-    animation: spin-reverse 30s linear infinite;
-    border-top-color: transparent;
-    border-bottom-color: transparent;
-}
-
-.radial-hud-3 {
-    width: 80vmin;
-    height: 80vmin;
-    border-width: 1px;
-    opacity: 0.2;
-    animation: spin 45s linear infinite;
-}
-
-/* Main content block */
-.main-content {
-    z-index: 10;
-    text-align: center;
-    text-shadow: 0 0 10px var(--glow-color);
-}
-
-#welcome-text {
-    font-size: 3rem;
-    font-weight: 500;
-    margin: 0;
-    opacity: 0;
-    transition: opacity 2s ease-in-out;
-}
-
-.system-status {
-    font-size: 1rem;
-    margin-bottom: 2rem;
-}
-
-.status-ok {
-    color: #4cff4c;
-    text-shadow: 0 0 8px #4cff4c;
-}
-
-/* Placeholder for voice visualization */
-.voice-wave-placeholder {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    height: 50px;
-    margin-bottom: 2rem;
-}
-
-.voice-wave-placeholder .bar {
-    width: 6px;
-    margin: 0 4px;
-    background-color: var(--hud-color);
-    box-shadow: 0 0 5px var(--glow-color);
-    animation: wave 1.5s infinite ease-in-out;
-}
-
-/* Staggered animation for wave bars */
-.voice-wave-placeholder .bar:nth-child(2) { animation-delay: 0.2s; }
-.voice-wave-placeholder .bar:nth-child(3) { animation-delay: 0.4s; }
-.voice-wave-placeholder .bar:nth-child(4) { animation-delay: 0.6s; }
-.voice-wave-placeholder .bar:nth-child(5) { animation-delay: 0.8s; }
-
-/* Interactive Buttons */
-.button-grid {
+.button-group {
     display: flex;
     gap: 1rem;
     justify-content: center;
+    width: 100%;
 }
 
 .hud-button {
     background: transparent;
-    border: 1px solid var(--hud-color);
-    color: var(--hud-color);
-    padding: 0.75rem 1.5rem;
-    font-family: inherit;
-    font-size: 1rem;
-    letter-spacing: 2px;
+    border: 1px solid var(--hud-blue);
+    color: var(--hud-blue);
+    padding: 10px 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: inset 0 0 5px var(--glow-color), 0 0 5px var(--glow-color);
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
-.hud-button:hover {
-    background-color: var(--glow-color);
-    color: var(--background-color);
-    box-shadow: 0 0 20px var(--secondary-glow);
-    border-color: var(--secondary-glow);
+.hud-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    border-color: rgba(0, 217, 255, 0.3);
+    color: rgba(0, 217, 255, 0.3);
 }
 
-
-/* Keyframe Animations */
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+#notification-bar {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    padding: 5px 20px;
+    border: 1px solid var(--hud-blue);
+    background: rgba(2, 10, 20, 0.8);
+    opacity: 0;
+}
+#notification-bar.error {
+    color: var(--error-red);
+    border-color: var(--error-red);
+    text-shadow: 0 0 8px var(--error-glow);
 }
 
-@keyframes spin-reverse {
-    from { transform: rotate(360deg); }
-    to { transform: rotate(0deg); }
+/* --- GLITCH EFFECT --- */
+.glitch {
+    animation: glitch 0.5s cubic-bezier(.25, .46, .45, .94) both;
+}
+.glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.glitch::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--error-red);
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim-1 0.5s infinite linear alternate-reverse;
+}
+.glitch::after {
+    left: -2px;
+    text-shadow: -2px 0 var(--hud-glow), 2px 2px var(--error-red);
+    clip: rect(85px, 450px, 90px, 0);
+    animation: glitch-anim-2 0.5s infinite linear alternate-reverse;
 }
 
-@keyframes wave {
-    0%, 100% { height: 10px; }
-    50% { height: 50px; }
+/* --- BOOT SEQUENCE --- */
+#boot-sequence {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: var(--dark-bg);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+}
+#boot-text {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+#progress-bar-container {
+    width: 300px;
+    height: 10px;
+    border: 1px solid var(--hud-blue);
+}
+#progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: var(--hud-blue);
+    box-shadow: 0 0 10px var(--hud-glow);
+}
+
+/* --- KEYFRAMES --- */
+@keyframes scan {
+    0% { transform: translateY(-10vh); }
+    100% { transform: translateY(110vh); }
+}
+@keyframes glitch-anim-1 {
+    0% { clip: rect(21px, 9999px, 9px, 0); transform: skew(0.58deg); }
+    100% { clip: rect(31px, 9999px, 96px, 0); transform: skew(0.23deg); }
+}
+@keyframes glitch-anim-2 {
+    0% { clip: rect(6px, 9999px, 1px, 0); transform: skew(0.19deg); }
+    100% { clip: rect(7px, 9999px, 12px, 0); transform: skew(0.6deg); }
+}
+
+/* --- RESPONSIVENESS --- */
+@media (max-width: 768px) {
+    .info-panel {
+        position: relative;
+        width: 90%;
+        top: auto; left: auto; right: auto;
+        transform: none;
+        margin: 10px auto;
+    }
+    #left-panel, #right-panel {
+        transform: none;
+        text-align: left;
+    }
+    #interaction-panel {
+        flex-direction: column;
+        width: 90%;
+    }
+    #text-input {
+        width: 100%;
+    }
 }

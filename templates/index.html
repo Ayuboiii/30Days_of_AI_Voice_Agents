@@ -3,35 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stark Industries - Voice Command</title>
+    <title>A.V.I.S. Interface</title>
     <link rel="stylesheet" href="/static/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="hud-container">
-        <div class="radial-hud-1"></div>
-        <div class="radial-hud-2"></div>
-        <div class="radial-hud-3"></div>
 
-        <div class="main-content">
-            <h1 id="welcome-text"></h1>
-            <p class="system-status">SYSTEM STATUS: <span class="status-ok">ONLINE</span></p>
+    <div id="hud">
+        <div class="layer" data-depth="0.1">
+            <div class="grid-background"></div>
+            <div class="scanline"></div>
+        </div>
 
-            <div class="voice-wave-placeholder">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
+        <div class="layer" data-depth="0.3">
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
+            
+            <svg id="scanner-tl" class="hud-widget">
+                <circle cx="50%" cy="50%" r="45%" /><circle cx="50%" cy="50%" r="30%" /><circle cx="50%" cy="50%" r="15%" />
+            </svg>
+            <svg id="scanner-br" class="hud-widget">
+                <circle cx="50%" cy="50%" r="48%" /><circle cx="50%" cy="50%" r="20%" />
+            </svg>
+        </div>
+
+        <div class="layer" data-depth="0.6">
+             <svg id="targeting-reticle" class="hud-widget">
+                <circle class="ring" cx="50" cy="50" r="48" /><circle class="ring" cx="50" cy="50" r="35" /><line class="ring" x1="0" y1="50" x2="100" y2="50" /><line class="ring" x1="50" y1="0" x2="50" y2="100" />
+            </svg>
+        </div>
+
+        <div class="layer" data-depth="1.0">
+            <div id="left-panel" class="hud-widget info-panel">
+                <h3>SYSTEM STATUS</h3>
+                <div class="stat"><span>SUIT INTEGRITY</span><span id="suit-integrity">100%</span></div>
+                <div class="stat"><span>POWER</span><span id="power-level">98%</span></div>
+                <div class="stat"><span>HEART RATE</span><span id="heart-rate">72 BPM</span></div>
             </div>
 
-            <div class="button-grid">
-                <button class="hud-button">DIAGNOSTICS</button>
-                <button class="hud-button">PROTOCOLS</button>
-                <button class="hud-button">COMBAT</button>
+            <div id="right-panel" class="hud-widget info-panel">
+                <h3>AUXILIARY</h3>
+                <div class="stat"><span>LOCAL TIME</span><span id="clock">--:--:--</span></div>
+                <div class="stat"><span>CPU LOAD</span><span id="cpu-load">--%</span></div>
+                <div class="stat"><span>WEAPON SYSTEMS</span><span>ONLINE</span></div>
             </div>
+
+            <div id="interaction-panel" class="hud-widget">
+                <input type="text" id="text-input" placeholder="Enter command or text for synthesis...">
+                <div class="button-group">
+                    <button id="synthesize-button" class="hud-button">SYNTHESIZE</button>
+                    <button id="playback-button" class="hud-button">PLAYBACK</button>
+                </div>
+            </div>
+
+            <div id="notification-bar" data-text=""></div>
         </div>
     </div>
+    
+    <div id="boot-sequence">
+        <div id="boot-text">A.V.I.S. BOOTING...</div>
+        <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="/static/script.js"></script>
 </body>
 </html>

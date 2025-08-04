@@ -3,7 +3,7 @@ import requests
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles  # <-- Import this
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -12,7 +12,7 @@ load_dotenv()
 
 app = FastAPI()
 
-# Mount the static directory to serve CSS, JS, etc.
+# --- IMPORTANT: Mount the static directory to serve CSS and JS ---
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 class TextPayload(BaseModel):
@@ -20,7 +20,7 @@ class TextPayload(BaseModel):
 
 @app.get("/")
 def read_index():
-    # Serve the main HTML file from the 'templates' directory
+    # --- IMPORTANT: Corrected path to your HTML file ---
     return FileResponse("templates/index.html")
 
 @app.post("/generate-voice")
@@ -32,10 +32,9 @@ def generate_voice(payload: TextPayload):
 
     murf_url = "https://api.murf.ai/v1/speech/generate"
 
-    # Using the header and body structure from the working example
     headers = {
         "Content-Type": "application/json",
-        "api-key": murf_api_key  # Using 'api-key' as per the example
+        "api-key": murf_api_key
     }
 
     body = {
@@ -44,18 +43,15 @@ def generate_voice(payload: TextPayload):
     }
 
     try:
-        # Using the synchronous 'requests' library
         response = requests.post(murf_url, headers=headers, json=body)
-        response.raise_for_status() # Raises an exception for 4xx/5xx errors
-        
+        response.raise_for_status()
         data = response.json()
         
-        # Using 'audioFile' as the key from the example
+        # Using 'audioFile' as this worked for you
         audio_url = data.get("audioFile") 
         return {"audio_url": audio_url}
 
     except requests.exceptions.RequestException as e:
-        # This will catch errors from the Murf API and other request issues
         raise HTTPException(status_code=500, detail=f"API request failed: {e}")
 
 # This block allows you to run the app directly with 'python main.py'
